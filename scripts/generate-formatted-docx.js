@@ -36,7 +36,29 @@ const replacements = [
   // Đề tài title on cover
   {
     from: 'Đề tài:  Hệ thống đặt vé xem phim / sự kiện.',
-    to: 'Đề tài:  Hệ thống CRM Chăm sóc Khách hàng (Đề tài số 4)'
+    to: 'ĐỀ TÀI SỐ 4: HỆ THỐNG CRM CHĂM SÓC KHÁCH HÀNG'
+  },
+  // Full URLs and commands with student ID before ID replacement
+  {
+    from: 'https://github.com/xuand5738-oss/DTC245200435',
+    to: 'https://github.com/dtc245200344-ship-it/Trien-Khai-KTHP'
+  },
+  {
+    from: 'cd /mnt/d/DTC245200435',
+    to: 'cd /mnt/d/Trien-Khai-KTHP'
+  },
+  // Giảng viên hướng dẫn & Sinh viên thực hiện
+  {
+    from: 'ThS. Lê Khánh Dương',
+    to: 'ThS. Vũ Việt Dũng'
+  },
+  {
+    from: 'Dương Thị Xuân',
+    to: 'Long Minh Thành'
+  },
+  {
+    from: 'DTC245200435',
+    to: 'DTC245200344'
   },
   // TOC
   {
@@ -78,10 +100,6 @@ const replacements = [
     from: 'ca5ed5a  Tích hợp Prometheus, Grafana và exporter để giám sát container, Nginx, MySQL.',
     to: 'ca5ed5a   Tích hợp Prometheus, Grafana và exporter để giám sát container, Nginx, PostgreSQL.'
   },
-  {
-    from: 'https://github.com/xuand5738-oss/DTC245200435',
-    to: 'https://github.com/crm-system/kthp-crm-de4'
-  },
   // Chapter 2 - Functions
   {
     from: 'Hình 2.1. Giao diện danh sách suất chiếu.',
@@ -94,11 +112,6 @@ const replacements = [
   {
     from: 'Hình 2.3. Chi tiết vé sau khi thanh toán giả lập thành công.',
     to: 'Hình 2.3. Giao diện Quản lý Danh sách Khách hàng Doanh nghiệp và Timeline.'
-  },
-  // Section 2.1.2 Docker Compose
-  {
-    from: 'cd /mnt/d/DTC245200435',
-    to: 'cd /mnt/d/TrienKhaiKTHP'
   },
   // Section 2.1.3 Database
   {
