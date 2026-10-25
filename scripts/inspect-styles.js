@@ -10,3 +10,4 @@ while ((m = regex.exec(styles)) !== null) {
 // Check default font
 const fontMatch = styles.match(/<w:rFonts\s+[^>]*w:ascii="([^"]+)"/);
 if (fontMatch) console.log('Default ASCII font:', fontMatch[1]);
+

@@ -8,3 +8,4 @@ for (let i = 0; i < Math.min(15, paragraphs.length); i++) {
   console.log(`\n--- PARAGRAPH ${i+1} ---`);
   console.log(paragraphs[i]);
 }
+

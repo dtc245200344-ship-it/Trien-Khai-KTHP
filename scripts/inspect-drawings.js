@@ -14,3 +14,4 @@ while ((m = regex.exec(xml)) !== null) {
   }
 }
 console.log('Total image / figure paragraphs:', count);
+

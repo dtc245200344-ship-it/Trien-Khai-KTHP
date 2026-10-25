@@ -8,3 +8,4 @@ console.log('CHƯƠNG 1 snippet:\n', xml.slice(ch1Idx - 100, ch1Idx + 500));
 // Find paragraphs around "Sơ đồ kiến trúc tổng thể" in chapter 1
 const soDoIdx = xml.indexOf('Sơ đồ kiến trúc tổng thể', ch1Idx + 100);
 console.log('\nSơ đồ kiến trúc snippet:\n', xml.slice(soDoIdx - 100, soDoIdx + 500));
+

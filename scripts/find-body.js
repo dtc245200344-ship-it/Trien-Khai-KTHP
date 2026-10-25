@@ -9,3 +9,4 @@ while ((pos = xml.indexOf(needle, pos)) !== -1) {
   console.log('----------------------------------------------------');
   pos += needle.length;
 }
+

@@ -22,3 +22,4 @@ console.log('Total non-empty paragraphs:', results.length);
 results.forEach(r => {
   console.log(`[P${r.index}] ${r.text}`);
 });
+

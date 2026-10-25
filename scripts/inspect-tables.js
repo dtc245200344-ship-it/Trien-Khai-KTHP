@@ -10,3 +10,4 @@ for (let i = 0; i < tables.length; i++) {
   const tText = tables[i].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   console.log(tText.slice(0, 300));
 }
+

@@ -8,3 +8,4 @@ $bmp.Save('d:\Triển Khai KTHP\scripts\test_drawing.png', [System.Drawing.Imagi
 $g.Dispose()
 $bmp.Dispose()
 Write-Output (Test-Path 'd:\Triển Khai KTHP\scripts\test_drawing.png')
+

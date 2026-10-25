@@ -12,3 +12,4 @@ keywords.forEach(kw => {
   }
   console.log(`Keyword "${kw}": ${count} occurrences`);
 });
+

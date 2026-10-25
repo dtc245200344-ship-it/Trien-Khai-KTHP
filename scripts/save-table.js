@@ -6,3 +6,4 @@ if (tables.length > 0) {
   fs.writeFileSync('d:/Triển Khai KTHP/scripts/table1.xml', tables[0], 'utf8');
   console.log('Saved table1.xml, length:', tables[0].length);
 }
+

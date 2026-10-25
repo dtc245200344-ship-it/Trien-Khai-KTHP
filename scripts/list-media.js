@@ -7,3 +7,4 @@ files.forEach(f => {
   const stat = fs.statSync(path.join(dir, f));
   console.log(f, 'size:', stat.size);
 });
+
