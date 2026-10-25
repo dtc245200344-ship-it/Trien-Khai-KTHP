@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Chăm Sóc Khách Hàng - Dashboard Quản Trị Hệ Thống</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <i class="bi bi-people-fill fs-4 text-primary"></i>
+        <span>CRM SYSTEM <span class="badge bg-primary fs-6 fw-normal">Đề 4 KTHP</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item">
+            <a class="nav-link active" href="/"><i class="bi bi-speedometer2 me-1"></i>Tổng Quan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/customers.html"><i class="bi bi-building me-1"></i>Khách Hàng</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contacts.html"><i class="bi bi-person-lines-fill me-1"></i>Người Liên Hệ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/interactions.html"><i class="bi bi-clock-history me-1"></i>Lịch Sử Tương Tác</a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <div id="systemStatusPill">
+            <span class="badge bg-light text-dark"><i class="bi bi-arrow-repeat spin me-1"></i>Đang kiểm tra...</span>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-hdd-network me-1"></i>Cổng Quản Trị
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><h6 class="dropdown-header">Hệ thống Giám sát & Quản trị</h6></li>
+              <li><a class="dropdown-item" href="http://localhost:5050" target="_blank"><i class="bi bi-database me-2 text-info"></i>pgAdmin 4 (PostgreSQL)</a></li>
+              <li><a class="dropdown-item" href="http://localhost:3001" target="_blank"><i class="bi bi-graph-up-arrow me-2 text-warning"></i>Grafana Dashboards</a></li>
+              <li><a class="dropdown-item" href="http://localhost:9090" target="_blank"><i class="bi bi-activity me-2 text-danger"></i>Prometheus Metrics</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/metrics" target="_blank"><i class="bi bi-code-slash me-2 text-primary"></i>CRM Prometheus Endpoint (/metrics)</a></li>
+              <li><a class="dropdown-item" href="/health" target="_blank"><i class="bi bi-heart-pulse me-2 text-success"></i>Healthcheck Endpoint (/health)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container-fluid px-4 py-4">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Bảng Điều Khiển Quản Trị CRM</h3>
+        <p class="text-muted mb-0">Hệ thống Chăm sóc Khách hàng & Giám sát Hạ tầng Triển khai</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/customers.html" class="btn btn-primary shadow-sm">
+          <i class="bi bi-person-plus-fill me-1"></i>+ Thêm Khách Hàng
+        </a>
+        <a href="/interactions.html" class="btn btn-outline-primary">
+          <i class="bi bi-telephone-plus me-1"></i>+ Ghi Tương Tác
+        </a>
+      </div>
+    </div>
+
+    <!-- Stat KPI Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">TỔNG KHÁCH HÀNG</div>
+            <h2 class="fw-bold mb-0 mt-1" id="statTotalCustomers">0</h2>
+            <div class="small text-success mt-1"><i class="bi bi-check2-circle me-1"></i>Đang quản lý</div>
+          </div>
+          <div class="stat-icon blue">
+            <i class="bi bi-building"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">NGƯỜI LIÊN HỆ</div>
+            <h2 class="fw-bold mb-0 mt-1" id="statTotalContacts">0</h2>
+            <div class="small text-primary mt-1"><i class="bi bi-person-lines-fill me-1"></i>Đầu mối trực tiếp</div>
+          </div>
+          <div class="stat-icon green">
+            <i class="bi bi-person-vcard"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">LƯỢT TƯƠNG TÁC</div>
+            <h2 class="fw-bold mb-0 mt-1" id="statTotalInteractions">0</h2>
+            <div class="small text-purple mt-1"><i class="bi bi-chat-heart me-1"></i>Cuộc gọi, Họp, Email</div>
+          </div>
+          <div class="stat-icon purple">
+            <i class="bi bi-headset"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-semibold">DOANH SỐ / HỢP ĐỒNG</div>
+            <h2 class="fw-bold mb-0 mt-1 text-truncate" style="max-width: 170px;" id="statTotalSpent">0 ₫</h2>
+            <div class="small text-warning mt-1"><i class="bi bi-cash-stack me-1"></i>Giá trị khách hàng</div>
+          </div>
+          <div class="stat-icon amber">
+            <i class="bi bi-currency-dollar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-4">
+        <div class="crm-card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <span><i class="bi bi-pie-chart-fill text-primary me-2"></i>Phân Bổ Trạng Thái</span>
+          </div>
+          <div class="card-body d-flex align-items-center justify-content-center p-3" style="min-height: 280px;">
+            <canvas id="chartStatus"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="crm-card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <span><i class="bi bi-bar-chart-fill text-success me-2"></i>Hình Thức Tương Tác</span>
+          </div>
+          <div class="card-body d-flex align-items-center justify-content-center p-3" style="min-height: 280px;">
+            <canvas id="chartType"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="crm-card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <span><i class="bi bi-graph-up text-purple me-2"></i>Phân Bố Ngành Nghề</span>
+          </div>
+          <div class="card-body d-flex align-items-center justify-content-center p-3" style="min-height: 280px;">
+            <canvas id="chartIndustry"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables Row: Recent Activities & Upcoming Follow-ups -->
+    <div class="row g-4">
+      <div class="col-12 col-lg-7">
+        <div class="crm-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-activity text-danger me-2"></i>Hoạt Động Chăm Sóc Gần Nhất</span>
+            <a href="/interactions.html" class="btn btn-sm btn-link text-decoration-none">Xem tất cả &rarr;</a>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Khách Hàng</th>
+                  <th>Hình Thức</th>
+                  <th>Nội Dung</th>
+                  <th>Kết Quả</th>
+                  <th>Thời Gian</th>
+                </tr>
+              </thead>
+              <tbody id="recentInteractionsTable">
+                <tr><td colspan="5" class="text-center text-muted py-4">Đang tải dữ liệu...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-5">
+        <div class="crm-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-bell-fill text-warning me-2"></i>Lịch Hẹn & Follow-up Sắp Tới</span>
+            <span class="badge bg-warning-subtle text-warning">Cần xử lý</span>
+          </div>
+          <div class="p-3" id="upcomingFollowUpsList">
+            <div class="text-center text-muted py-4">Đang tải lịch hẹn...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-3 mt-4 border-top text-center text-muted small bg-white">
+    <div class="container">
+      Hệ thống CRM Chăm sóc Khách hàng &bull; Đề tài KTHP Triển khai và Quản trị Hệ thống Phần mềm &bull; Kiến trúc Docker + PostgreSQL + Nginx + Prometheus + Grafana + Loki
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

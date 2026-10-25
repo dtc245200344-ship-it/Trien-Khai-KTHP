@@ -1,0 +1,33 @@
+{
+  "name": "crm-system-kthp",
+  "version": "1.0.0",
+  "description": "Hệ thống CRM Chăm sóc Khách hàng - Đề tài KTHP Triển khai và Quản trị Hệ thống",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "crm",
+    "kthp",
+    "docker",
+    "postgresql",
+    "nginx",
+    "prometheus",
+    "grafana",
+    "loki"
+  ],
+  "author": "Sinh viên KTHP",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.1",
+    "prom-client": "^15.1.3",
+    "winston": "^3.17.0"
+  }
+}
