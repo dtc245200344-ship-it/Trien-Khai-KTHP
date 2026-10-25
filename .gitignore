@@ -23,3 +23,7 @@ logs/
 # Coverage
 coverage/
 dist/
+
+# Office temporary lock files
+~$*
+

@@ -21,3 +21,4 @@ datasources:
     editable: true
     jsonData:
       maxLines: 1000
+

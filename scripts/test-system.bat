@@ -4,15 +4,15 @@ echo ====================================================================
 echo        KIỂM TRA TỰ ĐỘNG SỨC KHỎE CÁC DỊCH VỤ TRONG HỆ THỐNG
 echo ====================================================================
 
-echo [*] 1. Kiểm tra Nginx Reverse Proxy (Port 80)...
-curl -s -o nul -w "HTTP Code: %%{http_code}\n" http://localhost/
+echo [*] 1. Kiểm tra Nginx Reverse Proxy (Port 8080)...
+curl -s -o nul -w "HTTP Code: %%{http_code}\n" http://localhost:8080/
 
 echo [*] 2. Kiểm tra CRM Healthcheck Endpoint (/health)...
-curl -s http://localhost/health
+curl -s http://localhost:8080/health
 echo.
 
 echo [*] 3. Kiểm tra CRM Prometheus Metrics (/metrics)...
-curl -s http://localhost/metrics | findstr "http_requests_total"
+curl -s http://localhost:8080/metrics | findstr "http_requests_total"
 
 echo [*] 4. Kiểm tra pgAdmin 4 (Port 5050)...
 curl -s -o nul -w "HTTP Code: %%{http_code}\n" http://localhost:5050/
@@ -30,3 +30,4 @@ echo.
 echo ====================================================================
 echo Hoàn thành kiểm tra.
 pause
+

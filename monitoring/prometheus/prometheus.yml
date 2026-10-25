@@ -28,3 +28,4 @@ scrape_configs:
       - targets: ['loki:3100']
         labels:
           group: 'logging'
+

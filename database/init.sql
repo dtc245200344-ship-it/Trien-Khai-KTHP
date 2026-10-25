@@ -6,6 +6,21 @@
 -- 1. Tạo extension nếu cần
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- 1.1 Tạo bảng Người dùng & Phân quyền (Users & Roles)
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role VARCHAR(30) NOT NULL DEFAULT 'staff', -- 'admin', 'manager', 'staff'
+    department VARCHAR(50) DEFAULT 'Kinh doanh',
+    phone VARCHAR(25),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- 2. Tạo bảng Khách hàng (Customers)
 CREATE TABLE IF NOT EXISTS customers (
     id SERIAL PRIMARY KEY,
@@ -124,3 +139,12 @@ VALUES
 (6, 8, 'Email', 'Chiều đi', 'Gửi thư ngỏ đề xuất giải pháp chăm sóc khách hàng F&B', 'Giới thiệu các chức năng lưu vết lịch sử tương tác, phân loại nhóm khách hàng VIP.', 'Hẹn lại', NOW() - INTERVAL '2 days', NOW() + INTERVAL '5 days', 'Nhân viên Kinh doanh'),
 (7, 9, 'Họp trực tiếp', 'Chiều đi', 'Thuyết trình giải pháp Hardening và Bảo mật Container', 'Trình bày cơ chế multi-stage Docker build, non-root user, Nginx security headers và LogQL audit trail.', 'Khách quan tâm', NOW() - INTERVAL '4 days', NOW() + INTERVAL '1 days', 'Chuyên gia An ninh mạng'),
 (8, 10, 'Cuộc gọi', 'Chiều đi', 'Trao đổi về đề tài KTHP Triển khai và Quản trị Hệ thống', 'Hướng dẫn sinh viên làm quen với kiến trúc Prometheus, Loki, PostgreSQL, pgAdmin và Nginx.', 'Thành công', NOW() - INTERVAL '1 days', NOW() + INTERVAL '7 days', 'Giảng viên Hướng dẫn');
+
+-- Thêm tài khoản người dùng và phân quyền mẫu
+INSERT INTO users (username, password_hash, full_name, email, role, department, phone)
+VALUES
+('admin', '7c871eb0080345665a70e73e0ae07a639fe26a446f2f3fd350a9d777a0c71e8f', 'Nguyễn Văn Quản Trị', 'admin@crm.vn', 'admin', 'Ban Giám Đốc & Quản Trị Hệ Thống', '0901112233'),
+('manager', 'b2b0e0f3bd08c6d323141fd0c490077ab453fa71295238c01e2fc1c670883fc7', 'Trần Thị Trưởng Phòng', 'manager@crm.vn', 'manager', 'Phòng Kinh Doanh & CSKH', '0912223344'),
+('sale', '0e5dccb1c00ca9f1e6c2dcae033c33c539484ca918409f13ec3e1ca614631f55', 'Lê Hoàng Nhân Viên', 'sale@crm.vn', 'staff', 'Tổ Chăm Sóc Khách Hàng', '0983334455')
+ON CONFLICT (username) DO NOTHING;
+

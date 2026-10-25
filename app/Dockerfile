@@ -9,7 +9,7 @@ WORKDIR /app
 # Cài đặt libc6-compat nếu cần và copy package
 RUN apk add --no-cache libc6-compat
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts
 
 # STAGE 2: Runner (Ảnh chạy thực tế siêu nhẹ và an toàn)
 FROM node:20-alpine AS runner
@@ -38,3 +38,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
 
 # Khởi động ứng dụng
 CMD ["node", "server.js"]
+

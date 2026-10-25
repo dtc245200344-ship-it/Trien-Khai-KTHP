@@ -4,7 +4,7 @@ let allCustomersList = [];
 
 async function loadCustomersDropdown() {
   try {
-    const res = await fetch('/api/customers');
+    const res = await apiFetch('/api/customers');
     const result = await res.json();
     if (result.success) {
       allCustomersList = result.data;
@@ -34,7 +34,7 @@ async function loadContacts() {
     if (search) params.append('search', search);
     if (customerId) params.append('customer_id', customerId);
 
-    const res = await fetch(`/api/contacts?${params.toString()}`);
+    const res = await apiFetch(`/api/contacts?${params.toString()}`);
     const result = await res.json();
     if (!result.success) throw new Error(result.message);
 
@@ -56,31 +56,47 @@ function renderContactsTable(contacts) {
     return;
   }
 
+  const currentUser = getCurrentUser();
+  const canDelete = currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager');
+
   tbody.innerHTML = contacts.map(ct => `
     <tr>
       <td>
-        <div class="fw-bold text-dark">${ct.name}</div>
-        <div class="small text-muted font-monospace">${formatDate(ct.created_at)}</div>
+        <div class="d-flex align-items-center gap-3">
+          ${getPersonAvatar(ct.name)}
+          <div>
+            <div class="fw-bold text-dark">${ct.name}</div>
+            <div class="small text-muted font-monospace">${formatDate(ct.created_at)}</div>
+          </div>
+        </div>
       </td>
-      <td><span class="badge bg-light text-dark border">${ct.role || 'Chưa cập nhật'}</span></td>
       <td>
-        <div class="fw-semibold text-primary">${ct.company_name}</div>
+        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+          <i class="bi bi-briefcase me-1"></i>${ct.role || 'Chưa cập nhật'}
+        </span>
+      </td>
+      <td>
+        <div class="fw-semibold text-primary"><i class="bi bi-building me-1"></i>${ct.company_name}</div>
         <div class="small text-muted font-monospace">${ct.customer_code}</div>
       </td>
       <td>
-        ${ct.email ? `<a href="mailto:${ct.email}" class="text-decoration-none"><i class="bi bi-envelope me-1 text-muted"></i>${ct.email}</a>` : '<span class="text-muted small">Chưa có</span>'}
+        ${ct.email ? `<a href="mailto:${ct.email}" class="text-decoration-none text-dark"><i class="bi bi-envelope me-1 text-primary"></i>${ct.email}</a>` : '<span class="text-muted small">Chưa có</span>'}
       </td>
       <td>
-        ${ct.phone ? `<a href="tel:${ct.phone}" class="text-decoration-none text-dark fw-medium"><i class="bi bi-telephone me-1 text-muted"></i>${ct.phone}</a>` : '<span class="text-muted small">Chưa có</span>'}
+        ${ct.phone ? `<a href="tel:${ct.phone}" class="text-decoration-none text-dark fw-semibold font-monospace"><i class="bi bi-telephone me-1 text-success"></i>${ct.phone}</a>` : '<span class="text-muted small">Chưa có</span>'}
       </td>
       <td>
-        ${ct.is_primary ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-check-circle-fill me-1"></i>Liên hệ chính</span>' : '<span class="badge bg-light text-muted">Phụ</span>'}
+        ${ct.is_primary ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-star-fill text-warning me-1"></i>Chính</span>' : '<span class="badge bg-light text-muted border px-2 py-1">Phụ</span>'}
       </td>
-      <td class="small text-muted text-truncate" style="max-width: 180px;">${ct.notes || '-'}</td>
+      <td class="small text-muted text-truncate" style="max-width: 180px;" title="${ct.notes || ''}">${ct.notes || '-'}</td>
       <td class="text-center">
-        <button class="btn btn-sm btn-outline-danger" onclick="deleteContact(${ct.id}, '${ct.name}')" title="Xóa">
-          <i class="bi bi-trash"></i>
-        </button>
+        ${canDelete ? `
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteContact(${ct.id}, '${ct.name}')" title="Xóa người liên hệ">
+            <i class="bi bi-trash"></i>
+          </button>
+        ` : `
+          <button class="btn btn-sm btn-outline-secondary" disabled title="Khóa: Chỉ Admin/Manager mới có quyền xóa"><i class="bi bi-lock-fill"></i></button>
+        `}
       </td>
     </tr>
   `).join('');
@@ -92,10 +108,16 @@ function prepareAddContactModal() {
 
 // Xóa người liên hệ
 async function deleteContact(id, name) {
+  const user = getCurrentUser();
+  if (!user || user.role === 'staff') {
+    showToast('Từ chối! Nhân viên (Staff) không có quyền xóa liên hệ.', 'danger');
+    return;
+  }
+
   if (!confirm(`Bạn có chắc muốn xóa người liên hệ "${name}" không?`)) return;
 
   try {
-    const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
+    const res = await apiFetch(`/api/contacts/${id}`, { method: 'DELETE' });
     const result = await res.json();
     if (!result.success) throw new Error(result.message);
 
@@ -115,9 +137,8 @@ document.getElementById('formAddContact')?.addEventListener('submit', async (e) 
   data.is_primary = form.is_primary.checked;
 
   try {
-    const res = await fetch('/api/contacts', {
+    const res = await apiFetch('/api/contacts', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
 

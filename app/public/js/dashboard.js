@@ -4,8 +4,13 @@ let chartTypeInstance = null;
 let chartIndustryInstance = null;
 
 async function loadDashboardData() {
+  const user = getCurrentUser();
+  if (user && document.getElementById('heroUserName')) {
+    document.getElementById('heroUserName').innerText = user.full_name;
+  }
+
   try {
-    const res = await fetch('/api/stats/overview');
+    const res = await apiFetch('/api/stats/overview');
     if (!res.ok) throw new Error('Không thể tải dữ liệu thống kê');
     const data = await res.json();
 
@@ -148,19 +153,25 @@ function renderRecentInteractions(items) {
   tbody.innerHTML = items.map(it => `
     <tr>
       <td>
-        <div class="fw-semibold">${it.company_name}</div>
-        <div class="small text-muted">${it.contact_person || 'N/A'}</div>
+        <div class="d-flex align-items-center gap-2">
+          ${getCompanyAvatar(it.company_name)}
+          <div>
+            <div class="fw-bold text-dark">${it.company_name}</div>
+            <div class="small text-muted"><i class="bi bi-person me-1"></i>${it.contact_person || 'N/A'}</div>
+          </div>
+        </div>
       </td>
       <td>
-        <i class="bi ${getTypeIcon(it.type)} me-1"></i>
-        <span>${it.type}</span>
+        <span class="badge bg-light text-dark border px-2 py-1">
+          <i class="bi ${getTypeIcon(it.type)} me-1"></i>${it.type}
+        </span>
       </td>
       <td>
-        <div class="fw-medium text-truncate" style="max-width: 200px;">${it.title}</div>
-        <div class="small text-muted text-truncate" style="max-width: 200px;">${it.summary || ''}</div>
+        <div class="fw-semibold text-dark text-truncate" style="max-width: 220px;">${it.title}</div>
+        <div class="small text-muted text-truncate" style="max-width: 220px;" title="${it.summary || ''}">${it.summary || '-'}</div>
       </td>
       <td>${getOutcomeBadge(it.outcome)}</td>
-      <td class="small text-muted">${formatDate(it.interaction_date)}</td>
+      <td class="small text-muted font-monospace">${formatDate(it.interaction_date)}</td>
     </tr>
   `).join('');
 }
@@ -175,19 +186,19 @@ function renderUpcomingFollowUps(items) {
   }
 
   container.innerHTML = items.map(it => `
-    <div class="d-flex align-items-start gap-3 p-2 mb-2 rounded bg-light border">
-      <div class="stat-icon blue flex-shrink-0" style="width: 40px; height: 40px; font-size: 1.1rem;">
-        <i class="bi bi-calendar2-event"></i>
+    <div class="d-flex align-items-center gap-3 p-3 mb-2 rounded-3 bg-white border shadow-sm">
+      <div class="stat-icon amber flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.2rem;">
+        <i class="bi bi-calendar-event"></i>
       </div>
       <div class="flex-grow-1 overflow-hidden">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="fw-bold text-truncate">${it.company_name}</div>
-          <span class="badge bg-danger-subtle text-danger small">${formatDate(it.next_follow_up)}</span>
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div class="fw-bold text-dark text-truncate">${it.company_name}</div>
+          <span class="badge bg-warning-subtle text-warning border border-warning-subtle small font-monospace">${formatDate(it.next_follow_up)}</span>
         </div>
-        <div class="small text-muted text-truncate">${it.title}</div>
+        <div class="small text-muted text-truncate fw-medium">${it.title}</div>
         <div class="small text-primary mt-1">
-          <i class="bi bi-person me-1"></i>${it.contact_person || 'Liên hệ'} 
-          ${it.contact_phone ? `(${it.contact_phone})` : ''}
+          <i class="bi bi-person-fill me-1"></i>${it.contact_person || 'Liên hệ'} 
+          ${it.contact_phone ? `<span class="text-muted">(${it.contact_phone})</span>` : ''}
         </div>
       </div>
     </div>
@@ -197,3 +208,4 @@ function renderUpcomingFollowUps(items) {
 document.addEventListener('DOMContentLoaded', () => {
   loadDashboardData();
 });
+

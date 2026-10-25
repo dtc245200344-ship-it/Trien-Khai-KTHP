@@ -14,8 +14,11 @@
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
     <div class="container-fluid px-4">
       <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-        <i class="bi bi-people-fill fs-4 text-primary"></i>
-        <span>CRM SYSTEM <span class="badge bg-primary fs-6 fw-normal">Đề 4 KTHP</span></span>
+        <div class="brand-logo text-white"><i class="bi bi-people-fill fs-5"></i></div>
+        <div class="d-flex flex-column" style="line-height: 1.1;">
+          <span class="fw-bold">CRM SYSTEM</span>
+          <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 500;">HỆ THỐNG ĐỀ 4 &bull; KTHP</span>
+        </div>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
         <span class="navbar-toggler-icon"></span>
@@ -35,9 +38,27 @@
           <li class="nav-item">
             <a class="nav-link active" href="/interactions.html"><i class="bi bi-clock-history me-1"></i>Lịch Sử Tương Tác</a>
           </li>
+          <li class="nav-item" id="navUsersLink" style="display: none;">
+            <a class="nav-link" href="/users.html"><i class="bi bi-shield-check me-1"></i>Phân Quyền (RBAC)</a>
+          </li>
         </ul>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-3">
           <div id="systemStatusPill"></div>
+          <div id="userProfileNav"></div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-hdd-network me-1"></i>Cổng Quản Trị
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><h6 class="dropdown-header">Hệ thống Giám sát & Quản trị</h6></li>
+              <li><a class="dropdown-item" href="http://localhost:5050" target="_blank"><i class="bi bi-database me-2 text-info"></i>pgAdmin 4 (PostgreSQL)</a></li>
+              <li><a class="dropdown-item" href="http://localhost:3001" target="_blank"><i class="bi bi-graph-up-arrow me-2 text-warning"></i>Grafana Dashboards</a></li>
+              <li><a class="dropdown-item" href="http://localhost:9090" target="_blank"><i class="bi bi-activity me-2 text-danger"></i>Prometheus Metrics</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/metrics" target="_blank"><i class="bi bi-code-slash me-2 text-primary"></i>CRM Prometheus Endpoint (/metrics)</a></li>
+              <li><a class="dropdown-item" href="/health" target="_blank"><i class="bi bi-heart-pulse me-2 text-success"></i>Healthcheck Endpoint (/health)</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -200,3 +221,4 @@
   <script src="/js/interactions.js"></script>
 </body>
 </html>
+

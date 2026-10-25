@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Người Dùng & Phân Quyền - CRM Đề 4 KTHP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <div class="brand-logo text-white"><i class="bi bi-people-fill fs-5"></i></div>
+        <div class="d-flex flex-column" style="line-height: 1.1;">
+          <span class="fw-bold">CRM SYSTEM</span>
+          <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 500;">HỆ THỐNG ĐỀ 4 &bull; KTHP</span>
+        </div>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="bi bi-speedometer2 me-1"></i>Tổng Quan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/customers.html"><i class="bi bi-building me-1"></i>Khách Hàng</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contacts.html"><i class="bi bi-person-lines-fill me-1"></i>Người Liên Hệ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/interactions.html"><i class="bi bi-clock-history me-1"></i>Lịch Sử Tương Tác</a>
+          </li>
+          <li class="nav-item" id="navUsersLink">
+            <a class="nav-link active" href="/users.html"><i class="bi bi-shield-check me-1"></i>Phân Quyền (RBAC)</a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <div id="systemStatusPill"></div>
+          <div id="userProfileNav"></div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-hdd-network me-1"></i>Cổng Quản Trị
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><h6 class="dropdown-header">Hệ thống Giám sát & Quản trị</h6></li>
+              <li><a class="dropdown-item" href="http://localhost:5050" target="_blank"><i class="bi bi-database me-2 text-info"></i>pgAdmin 4 (PostgreSQL)</a></li>
+              <li><a class="dropdown-item" href="http://localhost:3001" target="_blank"><i class="bi bi-graph-up-arrow me-2 text-warning"></i>Grafana Dashboards</a></li>
+              <li><a class="dropdown-item" href="http://localhost:9090" target="_blank"><i class="bi bi-activity me-2 text-danger"></i>Prometheus Metrics</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/metrics" target="_blank"><i class="bi bi-code-slash me-2 text-primary"></i>CRM Prometheus Endpoint (/metrics)</a></li>
+              <li><a class="dropdown-item" href="/health" target="_blank"><i class="bi bi-heart-pulse me-2 text-success"></i>Healthcheck Endpoint (/health)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container-fluid px-4 py-4">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+      <div>
+        <h3 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill text-danger me-2"></i>Quản Trị Người Dùng &amp; Phân Quyền (RBAC)</h3>
+        <p class="text-muted mb-0">Quản lý danh sách tài khoản nhân viên, thiết lập vai trò và cấp phát quyền hạn</p>
+      </div>
+      <div>
+        <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAddUser">
+          <i class="bi bi-person-plus-fill me-1"></i>+ Tạo Tài Khoản Mới
+        </button>
+      </div>
+    </div>
+
+    <!-- Permission Guide Banner -->
+    <div class="alert alert-info border-info d-flex align-items-center justify-content-between p-3 mb-4 shadow-sm" role="alert">
+      <div>
+        <h6 class="fw-bold mb-1"><i class="bi bi-info-circle-fill me-2"></i>Mô hình Phân quyền Vai trò (Role-Based Access Control):</h6>
+        <div class="small">
+          <span class="badge bg-danger me-2">ADMIN</span> Toàn quyền hệ thống, xem, sửa, xóa khách hàng &amp; quản lý tài khoản người dùng.<br>
+          <span class="badge bg-purple text-white me-2" style="background-color: #9333ea;">MANAGER</span> Quyền quản lý: Thêm, sửa khách hàng, liên hệ, tương tác &amp; xem báo cáo. <strong>Không được xóa khách hàng</strong>.<br>
+          <span class="badge bg-primary me-2">STAFF</span> Quyền nhân viên: Xem danh sách, tạo khách hàng, thêm lịch sử tương tác. <strong>Không có quyền xóa dữ liệu</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table Card -->
+    <div class="crm-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-person-gear text-primary me-2"></i>Danh Sách Tài Khoản Trong Hệ Thống (<span id="userCount">0</span>)</span>
+        <button class="btn btn-sm btn-outline-secondary" onclick="loadUsers()"><i class="bi bi-arrow-clockwise me-1"></i>Làm mới</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tài Khoản</th>
+              <th>Họ &amp; Tên</th>
+              <th>Email &amp; SĐT</th>
+              <th>Phòng Ban</th>
+              <th>Vai Trò (Role)</th>
+              <th>Trạng Thái</th>
+              <th>Ngày Tạo</th>
+              <th class="text-center">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="9" class="text-center text-muted py-4">Đang tải danh sách người dùng...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: Thêm người dùng mới -->
+  <div class="modal fade" id="modalAddUser" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formAddUser">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold"><i class="bi bi-person-plus text-primary me-2"></i>Thêm Mới Tài Khoản &amp; Phân Quyền</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Tên đăng nhập (Username) *</label>
+              <input type="text" name="username" class="form-control" placeholder="Ví dụ: hoa.nv" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Mật khẩu khởi tạo *</label>
+              <input type="password" name="password" class="form-control" placeholder="Tối thiểu 6 ký tự..." required minlength="6">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Họ và tên nhân viên *</label>
+              <input type="text" name="full_name" class="form-control" placeholder="Ví dụ: Nguyễn Văn Hòa" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email làm việc *</label>
+              <input type="email" name="email" class="form-control" placeholder="hoa.nv@company.vn" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Vai trò phân quyền (Role) *</label>
+              <select name="role" class="form-select" required>
+                <option value="staff" selected>Chuyên viên CSKH (staff) - Quyền nhân viên</option>
+                <option value="manager">Trưởng phòng (manager) - Quyền quản lý</option>
+                <option value="admin">Quản trị viên (admin) - Toàn quyền tối cao</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phòng ban</label>
+              <input type="text" name="department" class="form-control" placeholder="Phòng Kinh Doanh, IT, CSKH..." value="Phòng Kinh Doanh">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Số điện thoại</label>
+              <input type="tel" name="phone" class="form-control" placeholder="09xxxxxxxx">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Lưu Người Dùng</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Sửa Phân Quyền & Thông Tin -->
+  <div class="modal fade" id="modalEditUser" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formEditUser">
+          <input type="hidden" name="id" id="editUserId">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-primary me-2"></i>Chỉnh Sửa Quyền &amp; Thông Tin Tài Khoản</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Tên đăng nhập</label>
+              <input type="text" id="editUsername" class="form-control bg-light" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Họ và tên *</label>
+              <input type="text" name="full_name" id="editFullName" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email *</label>
+              <input type="email" name="email" id="editEmail" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Vai trò phân quyền (Role) *</label>
+              <select name="role" id="editRole" class="form-select" required>
+                <option value="staff">Chuyên viên CSKH (staff)</option>
+                <option value="manager">Trưởng phòng (manager)</option>
+                <option value="admin">Quản trị viên (admin)</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phòng ban</label>
+              <input type="text" name="department" id="editDepartment" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Số điện thoại</label>
+              <input type="tel" name="phone" id="editPhone" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Trạng thái tài khoản</label>
+              <select name="is_active" id="editIsActive" class="form-select">
+                <option value="true">Đang hoạt động (Kích hoạt)</option>
+                <option value="false">Tạm khóa tài khoản</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Đặt lại mật khẩu mới (Nếu cần)</label>
+              <input type="password" name="password" class="form-control" placeholder="Để trống nếu không đổi">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Cập Nhật Quyền Hạn</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/users.js"></script>
+</body>
+</html>
+

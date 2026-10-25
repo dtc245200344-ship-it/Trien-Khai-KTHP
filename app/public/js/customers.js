@@ -3,16 +3,16 @@ let currentCustomers = [];
 
 async function loadCustomers() {
   try {
-    const search = document.getElementById('searchInput').value.trim();
-    const status = document.getElementById('statusFilter').value;
-    const industry = document.getElementById('industryFilter').value;
+    const search = document.getElementById('searchInput')?.value.trim();
+    const status = document.getElementById('statusFilter')?.value;
+    const industry = document.getElementById('industryFilter')?.value;
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (status) params.append('status', status);
     if (industry) params.append('industry', industry);
 
-    const res = await fetch(`/api/customers?${params.toString()}`);
+    const res = await apiFetch(`/api/customers?${params.toString()}`);
     const result = await res.json();
 
     if (!result.success) throw new Error(result.message);
@@ -35,12 +35,20 @@ function renderCustomerTable(customers) {
     return;
   }
 
+  const currentUser = getCurrentUser();
+  const canDelete = currentUser && currentUser.role === 'admin';
+
   tbody.innerHTML = customers.map(c => `
     <tr>
-      <td><span class="badge bg-light text-dark border font-monospace">${c.customer_code}</span></td>
+      <td><span class="badge bg-light text-dark border font-monospace px-2 py-1">${c.customer_code}</span></td>
       <td>
-        <div class="fw-bold text-primary">${c.company_name}</div>
-        <div class="small text-muted"><i class="bi bi-geo-alt me-1"></i>${c.address || 'Chưa cập nhật địa chỉ'}</div>
+        <div class="d-flex align-items-center gap-3">
+          ${getCompanyAvatar(c.company_name)}
+          <div>
+            <div class="fw-bold text-dark">${c.company_name}</div>
+            <div class="small text-muted"><i class="bi bi-geo-alt me-1"></i>${c.address || 'Chưa cập nhật địa chỉ'}</div>
+          </div>
+        </div>
       </td>
       <td>
         <div class="fw-medium">${c.contact_name}</div>
@@ -58,9 +66,15 @@ function renderCustomerTable(customers) {
           <button class="btn btn-outline-primary" onclick="viewCustomerDetail(${c.id})" title="Xem chi tiết hồ sơ">
             <i class="bi bi-eye"></i>
           </button>
-          <button class="btn btn-outline-danger" onclick="deleteCustomer(${c.id}, '${c.company_name}')" title="Xóa">
-            <i class="bi bi-trash"></i>
-          </button>
+          ${canDelete ? `
+            <button class="btn btn-outline-danger" onclick="deleteCustomer(${c.id}, '${c.company_name}')" title="Xóa khách hàng (Admin)">
+              <i class="bi bi-trash"></i>
+            </button>
+          ` : `
+            <button class="btn btn-outline-secondary" disabled title="Khóa: Chỉ Quản trị viên (Admin) mới có quyền xóa khách hàng">
+              <i class="bi bi-lock-fill"></i>
+            </button>
+          `}
         </div>
       </td>
     </tr>
@@ -70,7 +84,7 @@ function renderCustomerTable(customers) {
 // Xem chi tiết khách hàng và timeline tương tác
 async function viewCustomerDetail(id) {
   try {
-    const res = await fetch(`/api/customers/${id}`);
+    const res = await apiFetch(`/api/customers/${id}`);
     const result = await res.json();
     if (!result.success) throw new Error(result.message);
 
@@ -145,14 +159,20 @@ async function viewCustomerDetail(id) {
   }
 }
 
-// Xóa khách hàng
+// Xóa khách hàng (Chỉ Admin)
 async function deleteCustomer(id, name) {
+  const user = getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    showToast('Từ chối! Chỉ Quản trị viên (Admin) mới có quyền xóa khách hàng khỏi hệ thống.', 'danger');
+    return;
+  }
+
   if (!confirm(`Bạn có chắc chắn muốn xóa khách hàng "${name}" không?\nMọi dữ liệu liên hệ và lịch sử tương tác liên quan sẽ bị xóa.`)) {
     return;
   }
 
   try {
-    const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+    const res = await apiFetch(`/api/customers/${id}`, { method: 'DELETE' });
     const result = await res.json();
     if (!result.success) throw new Error(result.message);
 
@@ -171,9 +191,8 @@ document.getElementById('formAddCustomer')?.addEventListener('submit', async (e)
   const data = Object.fromEntries(formData.entries());
 
   try {
-    const res = await fetch('/api/customers', {
+    const res = await apiFetch('/api/customers', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
 

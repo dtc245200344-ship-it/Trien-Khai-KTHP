@@ -16,6 +16,8 @@ const customerRoutes = require('./routes/customers');
 const contactRoutes = require('./routes/contacts');
 const interactionRoutes = require('./routes/interactions');
 const statsRoutes = require('./routes/stats');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -108,6 +110,8 @@ app.get('/health', async (req, res) => {
 // ====================================================================
 // 3. API ROUTING
 // ====================================================================
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/interactions', interactionRoutes);
@@ -157,3 +161,4 @@ process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
 module.exports = app;
+

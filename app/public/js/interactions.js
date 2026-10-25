@@ -3,7 +3,7 @@ let currentInteractions = [];
 
 async function loadInteractionsDropdowns() {
   try {
-    const res = await fetch('/api/customers');
+    const res = await apiFetch('/api/customers');
     const result = await res.json();
     if (result.success) {
       const select = document.getElementById('modalCustomerSelect');
@@ -27,7 +27,7 @@ async function loadContactsForSelectedCustomer(customerId) {
   }
 
   try {
-    const res = await fetch(`/api/contacts?customer_id=${customerId}`);
+    const res = await apiFetch(`/api/contacts?customer_id=${customerId}`);
     const result = await res.json();
     if (result.success) {
       contactSelect.innerHTML = '<option value="">-- Chung (không chỉ định) --</option>' +
@@ -49,7 +49,7 @@ async function loadInteractions() {
     if (type) params.append('type', type);
     if (outcome) params.append('outcome', outcome);
 
-    const res = await fetch(`/api/interactions?${params.toString()}`);
+    const res = await apiFetch(`/api/interactions?${params.toString()}`);
     const result = await res.json();
     if (!result.success) throw new Error(result.message);
 
@@ -71,18 +71,26 @@ function renderInteractionsTable(items) {
     return;
   }
 
+  const currentUser = getCurrentUser();
+  const canDelete = currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager');
+
   tbody.innerHTML = items.map(it => `
     <tr>
       <td class="small text-muted font-monospace">${formatDate(it.interaction_date)}</td>
       <td>
-        <div class="fw-bold text-primary">${it.company_name}</div>
-        <div class="small text-muted">${it.contact_name ? `<i class="bi bi-person me-1"></i>${it.contact_name}` : 'Liên hệ chung'}</div>
+        <div class="d-flex align-items-center gap-2">
+          ${getCompanyAvatar(it.company_name)}
+          <div>
+            <div class="fw-bold text-dark">${it.company_name}</div>
+            <div class="small text-muted">${it.contact_name ? `<i class="bi bi-person me-1"></i>${it.contact_name}` : 'Liên hệ chung'}</div>
+          </div>
+        </div>
       </td>
       <td>
-        <span class="badge bg-light text-dark border">
+        <span class="badge bg-light text-dark border px-2 py-1">
           <i class="bi ${getTypeIcon(it.type)} me-1"></i>${it.type}
         </span>
-        <div class="small text-muted">${it.direction || ''}</div>
+        <div class="small text-muted mt-1"><i class="bi bi-arrow-left-right me-1"></i>${it.direction || ''}</div>
       </td>
       <td>
         <div class="fw-semibold text-dark">${it.title}</div>
@@ -91,16 +99,22 @@ function renderInteractionsTable(items) {
       <td>${getOutcomeBadge(it.outcome)}</td>
       <td>
         ${it.next_follow_up ? `
-          <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+          <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
             <i class="bi bi-calendar2-check me-1"></i>${formatDate(it.next_follow_up)}
           </span>
         ` : '<span class="text-muted small">Không</span>'}
       </td>
-      <td class="small fw-medium">${it.staff_name || 'Admin'}</td>
+      <td>
+        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1"><i class="bi bi-person-badge me-1"></i>${it.staff_name || 'Admin'}</span>
+      </td>
       <td class="text-center">
-        <button class="btn btn-sm btn-outline-danger" onclick="deleteInteraction(${it.id}, '${it.title}')" title="Xóa">
-          <i class="bi bi-trash"></i>
-        </button>
+        ${canDelete ? `
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteInteraction(${it.id}, '${it.title}')" title="Xóa tương tác">
+            <i class="bi bi-trash"></i>
+          </button>
+        ` : `
+          <button class="btn btn-sm btn-outline-secondary" disabled title="Khóa: Chỉ Admin/Manager mới có quyền xóa"><i class="bi bi-lock-fill"></i></button>
+        `}
       </td>
     </tr>
   `).join('');
@@ -108,13 +122,24 @@ function renderInteractionsTable(items) {
 
 function prepareAddInteractionModal() {
   loadInteractionsDropdowns();
+  const currentUser = getCurrentUser();
+  const staffInput = document.querySelector('input[name="staff_name"]');
+  if (staffInput && currentUser) {
+    staffInput.value = `${currentUser.full_name} (${currentUser.role.toUpperCase()})`;
+  }
 }
 
 async function deleteInteraction(id, title) {
+  const user = getCurrentUser();
+  if (!user || user.role === 'staff') {
+    showToast('Từ chối! Nhân viên (Staff) không có quyền xóa nhật ký tương tác.', 'danger');
+    return;
+  }
+
   if (!confirm(`Bạn có chắc muốn xóa bản ghi tương tác "${title}" không?`)) return;
 
   try {
-    const res = await fetch(`/api/interactions/${id}`, { method: 'DELETE' });
+    const res = await apiFetch(`/api/interactions/${id}`, { method: 'DELETE' });
     const result = await res.json();
     if (!result.success) throw new Error(result.message);
 
@@ -132,9 +157,8 @@ document.getElementById('formAddInteraction')?.addEventListener('submit', async 
   const data = Object.fromEntries(formData.entries());
 
   try {
-    const res = await fetch('/api/interactions', {
+    const res = await apiFetch('/api/interactions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
 

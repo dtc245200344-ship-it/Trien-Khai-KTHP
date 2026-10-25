@@ -28,3 +28,4 @@ echo "5. Máy chủ Loki:                        http://localhost:3100"
 echo "6. Healthcheck:                         http://localhost/health"
 echo "7. Prometheus Metrics:                  http://localhost/metrics"
 echo "===================================================================="
+

@@ -30,8 +30,31 @@ docker-compose ps
 
 ---
 
-### BƯỚC 2: DEMO ỨNG DỤNG CRM CHĂM SÓC KHÁCH HÀNG (2 - 3 phút)
-Truy cập trình duyệt tại địa chỉ: `http://localhost`
+### BƯỚC 2: DEMO XÁC THỰC & PHÂN QUYỀN VAI TRÒ (RBAC) (2 phút - "Điểm Cộng Lớn")
+Truy cập trình duyệt tại địa chỉ: `http://localhost:8080/login.html` (hoặc `http://localhost:8080`)
+
+1. **Thuyết minh cơ chế bảo mật xác thực:**
+   - Hệ thống áp dụng mô hình phân quyền dựa trên vai trò (Role-Based Access Control - RBAC) với mã hóa HMAC-SHA256 và Stateless JWT Token.
+   - Giao diện có sẵn 3 nút "Đăng nhập nhanh theo vai trò" để thầy/cô kiểm chứng trực tiếp:
+     - 🔴 **Admin (`admin` / `admin123`)**: Quản trị viên tối cao.
+     - 🟣 **Manager (`manager` / `manager123`)**: Trưởng phòng kinh doanh.
+     - 🔵 **Staff (`sale` / `sale123`)**: Chuyên viên chăm sóc khách hàng.
+
+2. **Demo tài khoản Quản trị viên (Admin):**
+   - Đăng nhập `admin`: Thanh Navbar hiển thị huy hiệu đỏ **`ADMIN`**.
+   - Xuất hiện menu đặc quyền **"Phân Quyền (RBAC)"** (`/users.html`).
+   - Thầy/cô thấy Admin có thể xem toàn bộ nhân viên, tạo tài khoản mới, cấp quyền, đổi mật khẩu và xóa/khóa tài khoản.
+   - Vào trang Khách hàng (`/customers.html`): Nút **Xóa (Delete)** màu đỏ hoạt động bình thường.
+
+3. **Demo chuyển đổi sang Chuyên viên CSKH (Staff):**
+   - Bấm vào Avatar góc phải Navbar &rarr; Chọn *"3. Quyền Staff (sale)"*: Hệ thống tự động chuyển đổi sang quyền nhân viên ngay lập tức.
+   - Menu *"Phân Quyền (RBAC)"* lập tức **biến mất**.
+   - Vào trang Khách hàng (`/customers.html`): Nút **Xóa** bị khóa bằng biểu tượng ổ khóa 🔒. Nếu cố tình gọi API xóa thì server trả về lỗi `HTTP 403 Forbidden` (được bảo vệ từ backend).
+
+---
+
+### BƯỚC 3: DEMO ỨNG DỤNG CRM CHĂM SÓC KHÁCH HÀNG (2 phút)
+Truy cập: `http://localhost:8080`
 
 1. **Trang Bảng Điều Khiển (Dashboard):**
    - Chỉ vào các thẻ KPI: Tổng khách hàng, Người liên hệ, Lượt tương tác, Doanh số ghi nhận.
@@ -144,3 +167,4 @@ Tại thanh menu bên trái của Grafana, bấm vào biểu tượng **Explore*
 
 **Câu 4: Multi-stage build trong Dockerfile của ứng dụng mang lại lợi ích gì?**
 > **Trả lời:** Multi-stage build giúp tách riêng quá trình cài đặt thư viện (`npm install`) và môi trường chạy (`runner`). Nhờ đó, ảnh Docker cuối cùng chỉ chứa các file thực sự cần thiết trên nền tảng `node:20-alpine`, dung lượng giảm từ hơn 1GB xuống dưới 150MB, đồng thời loại bỏ các công cụ build tiềm ẩn nguy cơ bảo mật và chạy dưới quyền user `node` phi đặc quyền (non-root).
+

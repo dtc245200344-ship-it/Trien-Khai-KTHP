@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../db');
 const logger = require('../logger');
 const { interactionGauge } = require('../metrics');
+const { authMiddleware, requireRole } = require('../auth');
 
 // Đồng bộ metric tương tác sang Prometheus
 async function syncInteractionMetrics() {
@@ -70,8 +71,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 2. Thêm mới bản ghi tương tác chăm sóc khách hàng
-router.post('/', async (req, res) => {
+// 2. Thêm mới bản ghi tương tác chăm sóc khách hàng (Admin, Manager, Staff)
+router.post('/', authMiddleware, requireRole('admin', 'manager', 'staff'), async (req, res) => {
   try {
     const {
       customer_id,
@@ -129,8 +130,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 3. Cập nhật tương tác
-router.put('/:id', async (req, res) => {
+// 3. Cập nhật tương tác (Admin, Manager, Staff)
+router.put('/:id', authMiddleware, requireRole('admin', 'manager', 'staff'), async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -176,8 +177,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// 4. Xóa tương tác
-router.delete('/:id', async (req, res) => {
+// 4. Xóa tương tác (Chỉ Admin & Manager)
+router.delete('/:id', authMiddleware, requireRole('admin', 'manager'), async (req, res) => {
   try {
     const { id } = req.params;
     const result = await db.query('DELETE FROM interactions WHERE id = $1 RETURNING title', [id], 'interaction_delete');
@@ -195,3 +196,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+

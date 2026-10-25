@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Nhập Hệ Thống - CRM Đề 4 KTHP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+    .login-header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #1e293b 70%, #0f172a 100%);
+      color: #ffffff;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      border-bottom: 2px solid #4f46e5;
+      position: relative;
+    }
+    .quick-role-btn {
+      text-align: left;
+      padding: 0.85rem 1.1rem;
+      border-radius: 12px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.88rem;
+    }
+    .quick-role-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.12);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-primary bg-opacity-25 mb-3">
+        <i class="bi bi-shield-lock-fill text-primary fs-1"></i>
+      </div>
+      <h3 class="fw-bold mb-1">CRM SYSTEM</h3>
+      <p class="text-light text-opacity-75 small mb-0">Hệ Thống Chăm Sóc Khách Hàng &bull; Đề 4 KTHP</p>
+      <div class="badge bg-primary-subtle text-primary mt-2 px-3 py-1">Xác Thực &amp; Phân Quyền Vai Trò (RBAC)</div>
+    </div>
+
+    <div class="p-4 p-md-5">
+      <form id="loginForm">
+        <div class="mb-3">
+          <label class="form-label fw-semibold small text-muted">TÊN ĐĂNG NHẬP</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill text-muted"></i></span>
+            <input type="text" id="usernameInput" class="form-control border-start-0 ps-0" placeholder="Nhập username..." required autofocus>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold small text-muted">MẬT KHẨU</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-key-fill text-muted"></i></span>
+            <input type="password" id="passwordInput" class="form-control border-start-0 border-end-0 ps-0" placeholder="Nhập mật khẩu..." required>
+            <button type="button" class="btn btn-light border border-start-0" id="btnTogglePassword" title="Ẩn/Hiện mật khẩu">
+              <i class="bi bi-eye-slash" id="toggleIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm mb-4" id="btnLogin">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Đăng Nhập Vào Hệ Thống
+        </button>
+      </form>
+
+      <!-- Quick Role Selector for Fast Demo -->
+      <div class="border-top pt-3">
+        <div class="text-muted small fw-bold text-uppercase mb-2 text-center">
+          <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Đăng Nhập Nhanh Theo Vai Trò (Demo)
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <button type="button" class="btn btn-outline-danger quick-role-btn d-flex align-items-center justify-content-between" onclick="quickLogin('admin', 'admin123')">
+            <div>
+              <div class="fw-bold"><i class="bi bi-shield-shaded me-1"></i>1. Quản Trị Viên (Admin)</div>
+              <div class="small text-muted">Toàn quyền: Thêm, Sửa, Xóa khách hàng &amp; Phân quyền</div>
+            </div>
+            <span class="badge bg-danger">admin</span>
+          </button>
+
+          <button type="button" class="btn btn-outline-purple quick-role-btn d-flex align-items-center justify-content-between border-purple" style="color: #7e22ce; border-color: #d8b4fe;" onclick="quickLogin('manager', 'manager123')">
+            <div>
+              <div class="fw-bold"><i class="bi bi-person-gear me-1"></i>2. Trưởng Phòng (Manager)</div>
+              <div class="small text-muted">Quản lý: Thêm, sửa, xem báo cáo, không được xóa KH</div>
+            </div>
+            <span class="badge" style="background-color: #9333ea;">manager</span>
+          </button>
+
+          <button type="button" class="btn btn-outline-primary quick-role-btn d-flex align-items-center justify-content-between" onclick="quickLogin('sale', 'sale123')">
+            <div>
+              <div class="fw-bold"><i class="bi bi-person-badge me-1"></i>3. Chuyên Viên CSKH (Staff)</div>
+              <div class="small text-muted">Tác nghiệp: Ghi tương tác, liên hệ, không được xóa</div>
+            </div>
+            <span class="badge bg-primary">staff</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    // Toggle Password visibility
+    document.getElementById('btnTogglePassword')?.addEventListener('click', () => {
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('toggleIcon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye';
+      } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye-slash';
+      }
+    });
+
+    // Quick login helper
+    function quickLogin(username, password) {
+      document.getElementById('usernameInput').value = username;
+      document.getElementById('passwordInput').value = password;
+      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    }
+
+    // Submit handler
+    document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('usernameInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const btn = document.getElementById('btnLogin');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xác thực...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        // Lưu token và thông tin người dùng
+        localStorage.setItem('crm_token', data.token);
+        localStorage.setItem('crm_user', JSON.stringify(data.user));
+
+        showToast(data.message, 'success');
+
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 800);
+      } catch (err) {
+        showToast(err.message || 'Đăng nhập thất bại', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i>Đăng Nhập Vào Hệ Thống';
+      }
+    });
+
+    // Nếu đã đăng nhập rồi, tự động chuyển về trang chủ
+    if (localStorage.getItem('crm_token')) {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>
+

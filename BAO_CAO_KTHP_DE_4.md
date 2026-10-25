@@ -217,6 +217,12 @@ Thay vì dùng mạng mặc định chung cho toàn bộ hệ thống, file `doc
 - Tự động chạy Unit Test, kiểm tra cú pháp file cấu hình Docker Compose.
 - Tích hợp công cụ **Aqua Security Trivy** quét toàn bộ các lỗ hổng bảo mật đã công bố (CVEs) trong Docker image trước khi triển khai lên môi trường thực tế.
 
+### 5.5. Triển khai Cơ chế Xác thực & Phân quyền Vai trò (Role-Based Access Control - RBAC)
+Để bảo vệ an toàn dữ liệu khách hàng trong môi trường doanh nghiệp nhiều người dùng, hệ thống áp dụng cơ chế xác thực Stateless HMAC-SHA256 Token và phân quyền theo 3 cấp độ chặt chẽ:
+- **Quản trị viên (Admin):** Toàn quyền truy cập cao nhất, xem, thêm, sửa, xóa khách hàng, quản trị danh sách người dùng và cấp phát quyền hạn (`/users.html`).
+- **Trưởng phòng (Manager):** Quyền quản lý: Thêm, sửa thông tin khách hàng, xem báo cáo thống kê, thêm sửa lịch sử chăm sóc. **Không được quyền xóa khách hàng** để tránh thất thoát dữ liệu quan trọng.
+- **Chuyên viên CSKH (Staff):** Quyền nhân viên: Chỉ được thêm mới khách hàng, cập nhật lịch sử tương tác và người liên hệ. **Bị khóa toàn bộ chức năng xóa dữ liệu** (nút Xóa bị khóa trên giao diện, và API backend tự động chặn với mã HTTP 403 Forbidden nếu cố tình thao tác).
+
 ---
 
 ## CHƯƠNG 6: KẾT QUẢ THỬ NGHIỆM, ĐO KIỂM VÀ ĐÁNH GIÁ
@@ -228,6 +234,8 @@ Thay vì dùng mạng mặc định chung cho toàn bộ hệ thống, file `doc
 | **Xem chi tiết hồ sơ** | Nhấp icon con mắt khách hàng #1 | Hiển thị đầy đủ thông tin, người liên hệ & timeline | **ĐẠT (PASS)** |
 | **Ghi nhận tương tác mới** | Chọn loại Cuộc gọi, outcome Thành công | Tương tác xuất hiện trong timeline, cập nhật metric | **ĐẠT (PASS)** |
 | **Tìm kiếm & Lọc dữ liệu** | Lọc trạng thái "Khách hàng thân thiết" | Bảng chỉ hiển thị đúng các khách hàng thân thiết | **ĐẠT (PASS)** |
+| **Phân quyền vai trò (RBAC)** | Đăng nhập tài khoản Staff, thử xóa khách hàng | Nút xóa bị khóa, server chặn và trả về HTTP 403 Forbidden | **ĐẠT (PASS)** |
+| **Quản trị người dùng** | Đăng nhập Admin, truy cập /users.html | Hiển thị bảng tài khoản, tạo mới và cấp quyền thành công | **ĐẠT (PASS)** |
 | **Quản trị qua pgAdmin** | Truy cập bảng `customers` trên port 5050 | Thấy dữ liệu đồng bộ tức thì với giao diện web | **ĐẠT (PASS)** |
 
 ### 6.2. Kết quả kiểm thử hiệu năng và bảo mật
@@ -255,3 +263,4 @@ Thay vì dùng mạng mặc định chung cho toàn bộ hệ thống, file `doc
 
 ---
 *Hà Nội, Năm học 2026 - Sinh viên thực hiện đề tài*
+
