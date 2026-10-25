@@ -502,3 +502,4 @@ const dashboard = {
 const filePath = path.join(__dirname, '..', 'monitoring', 'grafana', 'provisioning', 'dashboards', 'crm-overview.json');
 fs.writeFileSync(filePath, JSON.stringify(dashboard, null, 2), 'utf8');
 console.log('Successfully written upgraded dashboard JSON to:', filePath);
+
