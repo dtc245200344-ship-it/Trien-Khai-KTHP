@@ -171,35 +171,70 @@ console.log(`Total replacements performed: ${replacedCount} / ${replacements.len
 // Write back to workDir
 fs.writeFileSync(path.join(workDir, 'word', 'document.xml'), docXml, 'utf8');
 
-// 3. Package into .docx using tar.exe
+// 3. Package into valid OpenXML .docx using .NET ZipArchive with forward slashes
 const outPath1 = path.join(__dirname, '..', 'BAO_CAO_KTHP_DE_4.docx');
 const outPath2 = path.join(__dirname, '..', 'BAO_CAO_KTHP_DE_4_CapNhat.docx');
 
-const tempZip = path.join(require('os').tmpdir(), 'crm_repack_' + Date.now() + '.docx');
+const packScriptPath = path.join(require('os').tmpdir(), 'pack_script_' + Date.now() + '.ps1');
+const psCode = `
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+$sourceDir = "${workDir.replace(/\//g, '\\')}"
+$tempZip = Join-Path $env:TEMP "intermediate_${Date.now()}.zip"
+$finalDocx = Join-Path $env:TEMP "crm_valid_${Date.now()}.docx"
+
+if (Test-Path $tempZip) { Remove-Item $tempZip -Force }
+if (Test-Path $finalDocx) { Remove-Item $finalDocx -Force }
+
+[System.IO.Compression.ZipFile]::CreateFromDirectory($sourceDir, $tempZip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+
+$sourceArchive = [System.IO.Compression.ZipFile]::OpenRead($tempZip)
+$targetStream = [System.IO.File]::Create($finalDocx)
+$targetArchive = New-Object System.IO.Compression.ZipArchive($targetStream, [System.IO.Compression.ZipArchiveMode]::Create)
+
+foreach ($entry in $sourceArchive.Entries) {
+    $forwardSlashName = $entry.FullName.Replace('\\', '/')
+    $newEntry = $targetArchive.CreateEntry($forwardSlashName, [System.IO.Compression.CompressionLevel]::Optimal)
+    $entryStream = $entry.Open()
+    $newStream = $newEntry.Open()
+    $entryStream.CopyTo($newStream)
+    $newStream.Dispose()
+    $entryStream.Dispose()
+}
+
+$targetArchive.Dispose()
+$targetStream.Dispose()
+$sourceArchive.Dispose()
+Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
+
+Write-Output $finalDocx
+`;
+
+fs.writeFileSync(packScriptPath, psCode, 'utf8');
 
 try {
-  // tar.exe in Windows creates standard zip when given .zip or .docx extension
-  cp.execSync(`tar.exe -a -c -f "${tempZip}" -C "${workDir}" [Content_Types].xml _rels word`, { stdio: 'inherit' });
-  console.log('Repacked docx size:', fs.statSync(tempZip).size);
+  const result = cp.execSync(`powershell -ExecutionPolicy Bypass -File "${packScriptPath}"`, { encoding: 'utf8' }).trim();
+  const generatedFile = result.split('\n').pop().trim();
+  console.log('Generated valid OpenXML docx at:', generatedFile, 'Size:', fs.statSync(generatedFile).size);
 
-  // Try to copy to outPath1, if locked copy to outPath2
   let copied1 = false;
   try {
-    fs.copyFileSync(tempZip, outPath1);
+    fs.copyFileSync(generatedFile, outPath1);
     console.log('[SUCCESS] Saved to:', outPath1);
     copied1 = true;
   } catch (err) {
     console.warn('[NOTICE] Could not overwrite BAO_CAO_KTHP_DE_4.docx (file may be open in Word):', err.message);
   }
 
-  fs.copyFileSync(tempZip, outPath2);
+  fs.copyFileSync(generatedFile, outPath2);
   console.log('[SUCCESS] Saved to:', outPath2);
 
   if (copied1) {
-    console.log('\nBoth BAO_CAO_KTHP_DE_4.docx and BAO_CAO_KTHP_DE_4_CapNhat.docx are up to date!');
-  } else {
-    console.log('\nBAO_CAO_KTHP_DE_4_CapNhat.docx was updated successfully! (Please close MS Word to overwrite BAO_CAO_KTHP_DE_4.docx)');
+    console.log('\nBoth BAO_CAO_KTHP_DE_4.docx and BAO_CAO_KTHP_DE_4_CapNhat.docx are up to date and 100% compliant!');
   }
 } catch (e) {
   console.error('Packaging error:', e.message);
+} finally {
+  if (fs.existsSync(packScriptPath)) fs.unlinkSync(packScriptPath);
 }

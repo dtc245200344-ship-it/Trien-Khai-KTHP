@@ -6,3 +6,4 @@ console.log('GitHub snippet in sample_docx:\n', xml.slice(idx - 50, idx + 150));
 
 const cdIdx = xml.indexOf('/mnt/d');
 console.log('cd snippet in sample_docx:\n', xml.slice(cdIdx - 50, cdIdx + 150));
+
