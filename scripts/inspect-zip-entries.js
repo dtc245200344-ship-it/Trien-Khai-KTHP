@@ -41,3 +41,4 @@ console.log('\n--- REPACKED BAO_CAO_KTHP_DE_4.docx ---');
 const repacked = readZipEntries('D:/Triển Khai KTHP/BAO_CAO_KTHP_DE_4.docx');
 console.log('Total entries:', repacked.totalEntries);
 console.log('First 10 entries:', repacked.entries.slice(0, 10).map(e => e.name));
+

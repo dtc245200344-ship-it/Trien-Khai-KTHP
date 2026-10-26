@@ -387,7 +387,7 @@ node scripts/generate-traffic.js
 | **Grafana Loki** | [http://localhost:3100](http://localhost:3100) | Không yêu cầu | Cổng nhận và xử lý dữ liệu log tập trung |
 | **CRM Metrics** | [http://localhost:8080/metrics](http://localhost:8080/metrics) | Không yêu cầu | Endpoint OpenMetrics cho Prometheus cào dữ liệu |
 | **CRM Healthcheck** | [http://localhost:8080/health](http://localhost:8080/health) | Không yêu cầu | Endpoint kiểm tra tình trạng App và PostgreSQL |
-| **GitHub Repository** | `https://github.com/dtc245200344-ship-it/Trien-Khai-KTHP` | Token / Git Credential | Mã nguồn, Docker Compose, CI/CD Actions |
+| **GitHub Repository** | `https://github.com/dtc245200344-ship-it/Trien-Khai-KTHP` |  Token / Git Credential  | Mã nguồn, Docker Compose, CI/CD Actions |
 
 ---
 

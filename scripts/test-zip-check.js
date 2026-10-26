@@ -33,3 +33,4 @@ console.log('Magic bytes:', fs.readFileSync('C:/Users/MSI/AppData/Local/Temp/rea
 console.log('Total entries:', res.totalEntries);
 console.log('Entries:');
 res.entries.forEach(e => console.log(' -', e));
+

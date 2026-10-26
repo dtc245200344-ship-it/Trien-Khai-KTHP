@@ -10,3 +10,4 @@ try {
     Write-Output ("FAILED: " + $_.Exception.Message)
     if ($word) { $word.Quit() }
 }
+

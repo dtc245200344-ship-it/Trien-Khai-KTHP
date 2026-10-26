@@ -8,3 +8,4 @@ if (Test-Path $tempZip) { Remove-Item $tempZip -Force }
 [System.IO.Compression.ZipFile]::CreateFromDirectory($sourceDir, $tempZip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
 
 Write-Output ("Created file size: " + (Get-Item $tempZip).Length)
+

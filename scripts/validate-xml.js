@@ -23,3 +23,4 @@ console.log('w:t open:', openT, 'close:', closeT);
 const openTbl = (xml.match(/<w:tbl\b/g) || []).length;
 const closeTbl = (xml.match(/<\/w:tbl>/g) || []).length;
 console.log('w:tbl open:', openTbl, 'close:', closeTbl);
+

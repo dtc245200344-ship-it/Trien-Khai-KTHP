@@ -33,3 +33,4 @@ $sourceArchive.Dispose()
 Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
 
 Write-Output ("Created proper docx size: " + (Get-Item $finalDocx).Length)
+

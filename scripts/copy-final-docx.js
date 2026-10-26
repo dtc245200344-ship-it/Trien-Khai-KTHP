@@ -22,3 +22,4 @@ try {
 } catch (e) {
   console.log('[LOCKED] Could not write to BAO_CAO_KTHP_DE_4_CapNhat.docx:', e.message);
 }
+
