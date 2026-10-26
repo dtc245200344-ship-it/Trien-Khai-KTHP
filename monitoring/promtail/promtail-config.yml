@@ -17,7 +17,7 @@ scrape_configs:
         labels:
           job: nginx
           service: nginx-reverse-proxy
-          __path__: /var/log/nginx/*log
+          __path__: /var/log/nginx/crm-*.log
     pipeline_stages:
       - json:
           expressions:

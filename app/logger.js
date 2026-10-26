@@ -1,5 +1,11 @@
 const winston = require('winston');
 const path = require('path');
+const fs = require('fs');
+
+const logDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDir)) {
+  try { fs.mkdirSync(logDir, { recursive: true }); } catch (e) {}
+}
 
 // Định dạng log theo chuẩn JSON để Promtail và Loki dễ dàng phân tích bằng LogQL
 const logFormat = winston.format.combine(
@@ -22,6 +28,10 @@ const logger = winston.createLogger({
           return `[${timestamp}] [${service}] ${level}: ${message}${metaStr}`;
         })
       )
+    }),
+    new winston.transports.File({
+      filename: path.join(logDir, 'crm-app.log'),
+      format: logFormat
     })
   ]
 });
